@@ -128,12 +128,12 @@ def availableEvents(cs: mc.cursor, date: str):
     
 def popularEventTypes(cs: mc.cursor, N: int):
     try:
-        cs.execute("""SELECT e.type, SUM(IF(s.is_reserved = 1, 1, 0)) AS sum
+        cs.execute("""SELECT e.type, SUM(IF(s.is_reserved = 1, 1, 0)) AS num_reserved
                    FROM Event AS e
                    JOIN Slot AS s ON s.eid = e.eid
                    GROUP BY e.type
-                   HAVING sum >= %s
-                   ORDER BY sum DESC, e.type ASC;""",
+                   HAVING num_reserved >= %s
+                   ORDER BY num_reserved DESC, e.type ASC;""",
                    (N,))
         output = cs.fetchall()
         return 1, output
@@ -146,7 +146,7 @@ def participantSchedule(cs: mc.cursor, uid: int):
         cs.execute("""SELECT selected_e.eid, title, type, datetime, snum, v.vid, street, city, state, zip
                    FROM Venue AS v
                    JOIN Hosting AS h ON v.vid = h.vid
-                   JOIN (SELECT e.eid, title, type, datetime, snum
+                   RIGHT JOIN (SELECT e.eid, title, type, datetime, snum
                         FROM Event AS e
                         JOIN Slot AS s ON e.eid = s.eid
                         WHERE s.uid = %s
