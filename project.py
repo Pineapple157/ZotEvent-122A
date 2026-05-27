@@ -8,16 +8,18 @@ def readfile(cs: mc.cursor, pathstr: str):
     try:
         path = Path(pathstr)
         files = os.listdir(path)
+        path = Path(pathstr)
+        files = os.listdir(path)
         for filename in files:
-            table_name = filename[:-4]
+            table_name = Path(filename).stem
 
-            cs.execute(f"DROP TABLE IF EXISTS %s", (table_name,))
-            cs.execute(f"""LOAD DATA LOCAL INFILE %s)
+            cs.execute(f"DROP TABLE IF EXISTS {table_name}")
+            cs.execute("""LOAD DATA LOCAL INFILE %s
                             INTO TABLE {table_name}
                             FIELDS TERMINATED BY ',' 
-                            LINES TERMINATED BY '\n'
+                            LINES TERMINATED BY '\\n'
                             IGNORE 1 ROWS;""",
-                            (path/filename,))
+                            (str(path/filename),))
         return 1, None
 
     except Exception as e:
