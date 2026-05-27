@@ -8,8 +8,6 @@ def readfile(cs: mc.cursor, pathstr: str):
     try:
         path = Path(pathstr)
         files = os.listdir(path)
-        path = Path(pathstr)
-        files = os.listdir(path)
         for filename in files:
             table_name = Path(filename).stem
 
@@ -206,9 +204,10 @@ FuncList = {'import': readfile,
 
 
 def main():
-    conn = mc.connect(user='test', password='password', database='cs122a')
+    conn = mc.connect(host='localhost', user='test', password='password', database='cs122a', allow_local_infile=True)
     cursor = conn.cursor()
     try:
+        # cursor.execute("SET GLOBAL local_infile=1;")
         result = FuncList[sys.argv[1]](cursor, *sys.argv[2:])
         content = result[1]
         if not result[0]:
