@@ -14,7 +14,7 @@ def readfile(cs: mc.cursor, pathstr: str):
             table_name = Path(filename).stem
 
             cs.execute(f"DROP TABLE IF EXISTS {table_name}")
-            cs.execute("""LOAD DATA LOCAL INFILE %s
+            cs.execute(f"""LOAD DATA LOCAL INFILE %s
                             INTO TABLE {table_name}
                             FIELDS TERMINATED BY ',' 
                             LINES TERMINATED BY '\\n'
